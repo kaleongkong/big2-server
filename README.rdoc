@@ -1,0 +1,59 @@
+== README
+
+This README would normally document whatever steps are necessary to get the
+application up and running.
+
+Things you may want to cover:
+
+* Ruby version
+
+* System dependencies
+
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
+
+
+Please feel free to use a different markup language if you do not plan to run
+<tt>rake doc:app</tt>.
+
+Step:
+
+1. Start sql with: mysql.server start
+2. Run my sql (optional): mysql -u root -p, pw: (none)
+3. set mysql2 gem to mysql2 0.4.10
+
+
+
+Note for setting up websocket:
+  https://engineering.musefind.com/make-your-rails-app-real-time-in-under-ten-minutes-cd5bd4a47f61
+  https://stackoverflow.com/questions/34913887/rails-5-actioncable-undefined-method-fetch-for-nilnilclass/34934916
+  gem 'puma'
+  Running via Spring preloader in process 8054
+        create  app/channels/notes_channel.rb
+        create  app/assets/javascripts/cable.js
+        create  app/assets/javascripts/channels/notes.js
+        create  app/channels/application_cable/channel.rb
+        create  app/channels/application_cable/connection.rb
+
+Communicating b/w different devices:
+  Server side:
+  0. install localtunnel in ruby/npm?????? (not sure if it's a factor)
+  1. In application.rb: config.web_console.whitelisted_ips = '192.168.86.114' # IP of the client
+  2. In development.rb: Rails.application.config.action_cable.allowed_request_origins = ['http://192.168.86.134:3000', 'http://localhost:3000'] # ip of servers
+  3. starting rails with: rails s -b 0.0.0.0 -p 5000
+  Client side:
+  1. const cable = ActionCable.createConsumer('ws://192.168.86.134:5000/cable'); # use ip instead of localhost.
+  2. proxy is using localhost # could also set to ip?
+
+
