@@ -25,11 +25,11 @@ module Server
     # config.web_console.whitelisted_ips = '192.168.86.114' # only on development
     # config.web_console.whiny_requests = false
 
-    config.middleware.insert_before 0, "Rack::Cors" do
-      allow do
-        origins '*'
-        resource '*', :headers => :any, :methods => [:get, :post, :patch, :options]
-      end
-    end
+    # config.middleware.insert_before 0, "Rack::Cors" do
+    #   allow do
+    #     origins '*'
+    #     resource '*', :headers => :any, :methods => [:get, :post, :patch, :options]
+    #   end
+    # end
   end
 end
