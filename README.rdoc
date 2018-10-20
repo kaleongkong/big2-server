@@ -56,10 +56,38 @@ Communicating b/w different devices:
   1. const cable = ActionCable.createConsumer('ws://192.168.86.134:5000/cable'); # use ip instead of localhost.
   2. proxy is using localhost # could also set to ip?
 
-Production Side:
+Production Server Side:
   1. make sure to apply gem 'puma' to production as well
   2. update the production.rb to include the following two lines
     # config.web_socket_server_url = "wss://funbig2apis.herokuapp.com/cable" 
     # config.action_cable.allowed_request_origins = ['https://funbig2.herokuapp.com', 'http://funbig2.herokuapp.com']
+
+Production Client Side:
+  1. add app.json to include:
+      {
+        "buildpacks": [
+          {
+            "url": "https://github.com/mars/create-react-app-buildpack"
+          }
+        ]
+      }
+  2. use api-config.js to set up hostname
+  3. add static.json (?? api part may not be neccessary)
+      {
+        "root": "build/",
+        "proxies": {
+          "/api/": {
+            "origin": "https://funbig2.herokuapp.com"
+          }
+        }
+      }
+Refereces:
+Real-Time Rails: Implementing WebSockets in Rails 5 with Action Cable:
+- https://blog.heroku.com/real_time_rails_implementing_websockets_in_rails_5_with_action_cable
+
+
+Access heroku log
+heroku logs --tail -a funbig2apis
+
 
 
