@@ -5,6 +5,7 @@ test:
   adapter: async
  
 production:
-  adapter: redis
-  url: redis://10.10.3.153:6381
-  channel_prefix: appname_production
+  adapter: async
+  # adapter: redis
+  # url: redis://10.10.3.153:6381
+  # channel_prefix: appname_production
