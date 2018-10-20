@@ -22,7 +22,7 @@ module Server
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.web_console.whitelisted_ips = '192.168.86.114'
+    # config.web_console.whitelisted_ips = '192.168.86.114' # only on development
     # config.web_console.whiny_requests = false
   end
 end
