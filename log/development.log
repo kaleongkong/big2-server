@@ -11545,3 +11545,4 @@ Completed 200 OK in 0ms (Views: 0.2ms | ActiveRecord: 0.0ms)
 
 Finished "/cable/" [WebSocket] for 192.168.86.114 at 2018-10-19 22:35:43 -0700
 NotesChannel stopped streaming from notes
+DEPRECATION WARNING: ActiveRecord::Base.raise_in_transactional_callbacks= is deprecated, has no effect and will be removed without replacement. (called from block (3 levels) in <class:Railtie> at /Users/kaleongkong/.rbenv/versions/2.4.4/lib/ruby/gems/2.4.0/gems/activerecord-5.0.2/lib/active_record/railtie.rb:113)
