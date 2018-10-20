@@ -56,4 +56,10 @@ Communicating b/w different devices:
   1. const cable = ActionCable.createConsumer('ws://192.168.86.134:5000/cable'); # use ip instead of localhost.
   2. proxy is using localhost # could also set to ip?
 
+Production Side:
+  1. make sure to apply gem 'puma' to production as well
+  2. update the production.rb to include the following two lines
+    # config.web_socket_server_url = "wss://funbig2apis.herokuapp.com/cable" 
+    # config.action_cable.allowed_request_origins = ['https://funbig2.herokuapp.com', 'http://funbig2.herokuapp.com']
+
 
