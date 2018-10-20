@@ -77,7 +77,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_cable.url = "wss://funbig2apis.herokuapp.com/cable"
+  # config.action_cable.url = "wss://funbig2apis.herokuapp.com/cable"
   config.web_socket_server_url = "wss://funbig2apis.herokuapp.com/cable" 
-  config.action_cable.allowed_request_origins = ['https://funbig2apis.herokuapp.com', 'http://funbig2apis.herokuapp.com']
+  config.action_cable.allowed_request_origins = ['https://funbig2.herokuapp.com', 'http://funbig2.herokuapp.com']
 end
