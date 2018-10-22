@@ -1,4 +1,4 @@
-class NotesChannel < ApplicationCable::Channel
+class NotesChannel < ApplicationCable::Channel 
   def subscribed
     # stream_from "some_channel"
     stream_from 'notes'
@@ -12,33 +12,27 @@ class NotesChannel < ApplicationCable::Channel
     $room[:players] ||= {}
     $room[:players][data["user"]] = true if data["user"]
     deck = NotesChannel.generate_cards
+    user1, user2 = Hash.new, Hash.new
     if $room[:players].length == 2
-      ActionCable.server.broadcast('notes', {start_state: 1, user1: deck[0..(deck.length/4)-1].sort_by{|card| card[:order]}, user2: deck[(deck.length/4).. 2 * (deck.length/4)-1].sort_by{|card| card[:order]}})
+      user1[:deck] = deck[0..(deck.length/4)-1]
+      user2[:deck] = deck[(deck.length/4).. 2 * (deck.length/4)-1]
+      user1[:start_state] = user1[:deck].min < user2[:deck].min ? 1 : 2
+      user2[:start_state] = user1[:deck].min < user2[:deck].min ? 2 : 1
+      user1[:deck] = user1[:deck].sort.map{|card| card.to_json}
+      user2[:deck] = user2[:deck].sort.map{|card| card.to_json}
+      ActionCable.server.broadcast('notes', {user1: user1, user2: user2})
     end
   end
 
   def self.generate_cards
-    nums = (1..13).to_a
-    values = nums.map do |num|
-      if num == 11
-        num = 'J'
-      elsif num == 12
-        num = 'Q'
-      elsif num == 13
-        num = 'K'
-      end
-      num
-    end
-    patterns = ['diamond', 'cube', 'heart', 'spade']
+    values = (0..12).to_a
+    patterns = (0..3).to_a
     cards = []
-    patterns.each do |p|
-      values.each do |v|
-        order = v
-        order = v == 'J' ? 11 : (v=='Q' ? 12 : 13) if ['J', 'Q', 'K'].include?(v)
-        cards << {value: v, pattern: p, order: order}
+    values.each do |v|
+      patterns.each do |p|
+        cards << GameComponent::Card.new(v, p)
       end
     end
-    cards.shuffle!
-    return cards
+    return cards.shuffle
   end
 end

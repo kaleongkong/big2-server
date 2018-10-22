@@ -24,5 +24,7 @@ module Server
     config.active_record.raise_in_transactional_callbacks = true
     # config.web_console.whitelisted_ips = '192.168.86.114' # only on development
     # config.web_console.whiny_requests = false
+
+    config.autoload_paths += %W(#{config.root}/utils) # add this line
   end
 end

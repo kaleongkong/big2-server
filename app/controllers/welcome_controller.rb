@@ -3,7 +3,13 @@ class WelcomeController < ApplicationController
   $room = {players:{}}
   def join_room
     $room[:players][params[:user]] = true if params[:user]
-    render :json => {start_state: ($room[:players].length == 2 ? 1 : -1)}
+    user1 = {
+      start_state: ($room[:players].length == 2 ? 1 : -1)
+    }
+    user2 = {
+      start_state: ($room[:players].length == 2 ? 1 : -1)
+    }
+    render :json => {user1: user1, user2: user2}
   end
 
   def move
