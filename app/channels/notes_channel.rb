@@ -10,6 +10,7 @@ class NotesChannel < ApplicationCable::Channel
 
   def receive(data)
     $room[:players] ||= {}
+    $room[:last_combination_data] ||= {}
     $room[:players][data["user"]] = true if data["user"]
     deck = NotesChannel.generate_cards
     user1, user2 = Hash.new, Hash.new

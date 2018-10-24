@@ -3,6 +3,7 @@ module GameComponent
     include Comparable
     attr_accessor :value, :pattern
     def initialize(value, pattern)
+      puts value
       self.value = value
       self.pattern = pattern
     end
@@ -12,11 +13,11 @@ module GameComponent
     end
 
     def valueId2Name(id)
-      return (['Ace'] + ((2..10).to_a) + ['Jack', 'Queen', 'King'])[id]
+      return (((3..10).to_a.map{|i| i.to_s}) + ['Jack', 'Queen', 'King', 'Ace', '2'])[id]
     end
 
     def to_json
-      return {value: valueId2Name(value), pattern: patternId2Name(pattern)}
+      return {value: value, name: valueId2Name(value), pattern: pattern, pattern_name: patternId2Name(pattern)}
     end
 
     def <=> (card)
@@ -81,9 +82,11 @@ module GameComponent
     end
 
     def <=> (combination)
-      combination.sort!
-      return 0 if combination.length == 1
-      if combination.length <= 3
+      combination.cards.sort!
+      puts 'yes?'
+      if combination.cards.length <= 3
+        puts self.cards[-1].value
+        puts combination.cards[-1].value
         return self.cards[-1] <=> combination.cards[-1]
       elsif (is_full_house && combination.is_full_house) || (is_four_card && combination.is_four_card)
         if dominate_value > combination.dominate_value
@@ -93,7 +96,7 @@ module GameComponent
         end
       elsif (is_straight && combination.is_straight) || (is_royal_flash && combination.is_royal_flash)
         (0..4).to_a.reverse.each do |i|
-          r = cards[i].value <=> combination[i].value
+          r = cards[i].value <=> combination.cards[i].value
           return r if r!= 0
         end
       elsif (is_flash && combination.is_flash)
