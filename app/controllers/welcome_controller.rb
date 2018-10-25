@@ -29,7 +29,7 @@ class WelcomeController < ApplicationController
         ($room[:last_combination_data][:combination].cards.length == combination.cards.length && 
           $room[:last_combination_data][:combination] < combination)))
       $room[:last_combination_data] = {user: params[:user], combination: combination}
-      render :json => params[:combination]
+      render :json => params
     else
       render :json => {error: 'Invalid combination'}
     end
