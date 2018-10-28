@@ -3,15 +3,20 @@ class WelcomeController < ApplicationController
   def join_room
     $room ||= {}
     $room[:players] ||= {}
-    $room[:players][params[:user]] = true if params[:user]
+    $room[:players][params[:user].to_i] = true if params[:user]
     $room[:last_combination_data] ||= {}
-    user1 = {
-      start_state: -1
-    }
-    user2 = {
-      start_state: -1
-    }
-    render :json => {user1: user1, user2: user2}
+    # user1 = {
+    #   game_state: -1
+    # }
+    # user2 = {
+    #   game_state: -1
+    # }
+    # render :json => {user1: user1, user2: user2}
+    players_stats = []
+    GameComponent::NUM_OF_PLAYERS.times do |i|
+      players_stats << {game_state: -1}
+    end
+    render :json => {players_stats: players_stats}
   end
 
   def move

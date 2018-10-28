@@ -1,4 +1,5 @@
 module GameComponent
+  NUM_OF_PLAYERS = 2
   class Card
     include Comparable
     attr_accessor :value, :pattern
@@ -45,7 +46,7 @@ module GameComponent
     end
 
     def validate
-      return true if cards.empty?
+      return false if cards.empty?
       return false if cards.length == 4 || (cards.length > 5 && cards.length < 13)
       return false if cards.length >= 2 && cards.length <= 3 && cards.map{|c| c.value}.uniq.length > 1
       return is_four_card || is_full_house || is_flash || is_straight
@@ -88,6 +89,8 @@ module GameComponent
         puts self.cards[-1].value
         puts combination.cards[-1].value
         return self.cards[-1] <=> combination.cards[-1]
+      elsif self.weight != combination.weight
+        return self.weight <=> combination.weight
       elsif (is_full_house && combination.is_full_house) || (is_four_card && combination.is_four_card)
         if dominate_value > combination.dominate_value
           return 1
@@ -102,7 +105,7 @@ module GameComponent
       elsif (is_flash && combination.is_flash)
         return self.cards[-1].pattern <=> combination.cards[-1].pattern
       else
-        return self.weight <=> combination.weight
+        return 0
       end
     end
 
