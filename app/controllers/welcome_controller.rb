@@ -1,22 +1,17 @@
 class WelcomeController < ApplicationController
   protect_from_forgery with: :null_session
   def join_room
-    $room ||= {}
-    $room[:players] ||= {}
-    $room[:players][params[:user].to_i] = true if params[:user]
-    $room[:last_combination_data] ||= {}
-    # user1 = {
-    #   game_state: -1
-    # }
-    # user2 = {
-    #   game_state: -1
-    # }
-    # render :json => {user1: user1, user2: user2}
+    $lobby ||= GameComponent::Lobby.new
+    puts "lobby: #{$lobby.rooms}"
+    room = params[:room_id] ? $lobby.get_room(params[:room_id]) : GameComponent::Room.new
+    $lobby.add_room(room) if !$lobby.contains?(room.id)
+    room.add_player(params[:user].to_i) if params[:user]
+
     players_stats = []
     GameComponent::NUM_OF_PLAYERS.times do |i|
       players_stats << {game_state: -1}
     end
-    render :json => {players_stats: players_stats}
+    render :json => {players_stats: players_stats, room_id: room.id}
   end
 
   def move
@@ -24,16 +19,14 @@ class WelcomeController < ApplicationController
     params[:combination].each do |card|
       cards << GameComponent::Card.new(card['value'], card['pattern'])
     end
-    puts "cards: #{cards.to_json}"
-    puts $room
     combination = GameComponent::Combination.new(cards)
 
-    # puts $room[:last_combination_data][:combination] < combination
-    if (combination.validate && 
-      ($room[:last_combination_data].empty? || $room[:last_combination_data][:user] == params[:user] || 
-        ($room[:last_combination_data][:combination].cards.length == combination.cards.length && 
-          $room[:last_combination_data][:combination] < combination)))
-      $room[:last_combination_data] = {user: params[:user], combination: combination}
+    room = $lobby.get_room(params[:room_id])
+    if (combination.validate && (room.is_new? || room.last_player == params[:user] || 
+        (room.last_combination.length == combination.length && 
+          room.last_combination < combination)))
+      room.last_combination = combination
+      room.last_player = params[:user]
       render :json => params
     else
       render :json => {error: 'Invalid combination'}
@@ -41,9 +34,8 @@ class WelcomeController < ApplicationController
   end
 
   def pass
-    puts "last_combination_data: #{$room[:last_combination_data]}"
-    puts "params: #{params[:last_player]}"
-    if ($room[:last_combination_data].empty? || $room[:last_combination_data][:user] != params[:last_player])
+    room = $lobby.get_room(params[:room_id])
+    if (room.is_new? || room.last_player != params[:last_player])
       render :json => {success: "Success"}
     else
       render :json => {error: "All your components are passed. It's your turn to serve."}
@@ -51,7 +43,8 @@ class WelcomeController < ApplicationController
   end
 
   def reset
-    $room = {}
+    room = $lobby.get_room(params[:room_id])
+    $lobby.remove_room(room)
     render :json => {user_count: 0}
   end
 end

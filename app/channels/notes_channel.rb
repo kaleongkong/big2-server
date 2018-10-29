@@ -9,20 +9,21 @@ class NotesChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    $room[:players] ||= {}
-    $room[:last_combination_data] ||= {}
-    $room[:players][data["user"].to_i] = true if data["user"]
+    $lobby ||= GameComponent::Lobby.new
+    room = data["room_id"] ? $lobby.get_room(data["room_id"]) : GameComponent::Room.new
+    $lobby.add_room(room) if !$lobby.contains?(room.id)
+    room.add_player(data["user"].to_i) if data["user"]
+
     deck = NotesChannel.generate_cards
     users = []
     GameComponent::NUM_OF_PLAYERS.times do
       users << Hash.new
     end
-    # user1, user2 = Hash.new, Hash.new
-    if $room[:players].length == GameComponent::NUM_OF_PLAYERS
+    if room.num_of_players == GameComponent::NUM_OF_PLAYERS
       min_player = {i: -1, value: 13}
       GameComponent::NUM_OF_PLAYERS.times do |i|
         # num_of_cards = (deck.length/4)
-        num_of_cards = 5
+        num_of_cards = 3
         users[i][:deck] = deck[i * num_of_cards.. (i+1) * num_of_cards - 1]
         min_player = {i: i, value: users[i][:deck].min.value} if users[i][:deck].min.value < min_player[:value]
         users[i][:deck] = users[i][:deck].sort.map{|card| card.to_json}
@@ -30,14 +31,7 @@ class NotesChannel < ApplicationCable::Channel
       GameComponent::NUM_OF_PLAYERS.times do |i|
         users[i][:game_state] = i == min_player[:i] ? 1 : 2
       end
-      ActionCable.server.broadcast('notes', {players_stats: users})
-      # user1[:deck] = deck[0..(deck.length/4)-1]
-      # user2[:deck] = deck[(deck.length/4).. 2 * (deck.length/4)-1]
-      # user1[:game_state] = user1[:deck].min < user2[:deck].min ? 1 : 2
-      # user2[:game_state] = user1[:deck].min < user2[:deck].min ? 2 : 1
-      # user1[:deck] = user1[:deck].sort.map{|card| card.to_json}
-      # user2[:deck] = user2[:deck].sort.map{|card| card.to_json}
-      # ActionCable.server.broadcast('notes', {user1: user1, user2: user2})
+      ActionCable.server.broadcast('notes', {players_stats: users, room_id: room.id})
     end
   end
 
