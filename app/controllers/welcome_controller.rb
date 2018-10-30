@@ -5,12 +5,14 @@ class WelcomeController < ApplicationController
     puts "lobby: #{$lobby.rooms}"
     room = params[:room_id] ? $lobby.get_room(params[:room_id]) : GameComponent::Room.new
     $lobby.add_room(room) if !$lobby.contains?(room.id)
-    room.add_player(params[:user].to_i) if params[:user]
+    room.add_player(params[:user]) if params[:user]
 
-    players_stats = []
-    GameComponent::NUM_OF_PLAYERS.times do |i|
-      players_stats << {game_state: -1}
-    end
+    players_stats = {}
+    # GameComponent::NUM_OF_PLAYERS.times do |i|
+    #   players_stats[i.to_s] = {game_state: -1}
+    # end
+    players_stats[params[:user]] = {game_state: -1}
+    puts "join_room: #{{players_stats: players_stats, room_id: room.id}}"
     render :json => {players_stats: players_stats, room_id: room.id}
   end
 

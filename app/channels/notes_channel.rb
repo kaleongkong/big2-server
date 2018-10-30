@@ -10,29 +10,35 @@ class NotesChannel < ApplicationCable::Channel
 
   def receive(data)
     $lobby ||= GameComponent::Lobby.new
+    puts [$lobby.rooms]
     room = data["room_id"] ? $lobby.get_room(data["room_id"]) : GameComponent::Room.new
     $lobby.add_room(room) if !$lobby.contains?(room.id)
-    room.add_player(data["user"].to_i) if data["user"]
+    # room.add_player(data["user"]) if data["user"]
 
     deck = NotesChannel.generate_cards
-    users = []
-    GameComponent::NUM_OF_PLAYERS.times do
-      users << Hash.new
+    users = {}
+    room.get_players.each do |id|
+      users[id] = Hash.new
     end
     if room.num_of_players == GameComponent::NUM_OF_PLAYERS
       min_player = {i: -1, value: 13}
-      GameComponent::NUM_OF_PLAYERS.times do |i|
+      room.get_players.each_with_index do |id, i|
         # num_of_cards = (deck.length/4)
         num_of_cards = 3
-        users[i][:deck] = deck[i * num_of_cards.. (i+1) * num_of_cards - 1]
-        min_player = {i: i, value: users[i][:deck].min.value} if users[i][:deck].min.value < min_player[:value]
-        users[i][:deck] = users[i][:deck].sort.map{|card| card.to_json}
+        users[id][:deck] = deck[i * num_of_cards.. (i+1) * num_of_cards - 1]
+        min_player = {i: i, value: users[id][:deck].min.value} if users[id][:deck].min.value < min_player[:value]
+        users[id][:deck] = users[id][:deck].sort.map{|card| card.to_json}
       end
-      GameComponent::NUM_OF_PLAYERS.times do |i|
-        users[i][:game_state] = i == min_player[:i] ? 1 : 2
+      room.get_players.each_with_index do |id, i|
+        users[id][:game_state] = i == min_player[:i] ? 1 : 2
       end
-      ActionCable.server.broadcast('notes', {players_stats: users, room_id: room.id})
+    else
+      room.get_players.each_with_index do |id, i|
+        users[id][:game_state] = -1
+      end
     end
+    puts "receive: #{{players_stats: users, room_id: room.id}}"
+    ActionCable.server.broadcast('notes', {players_stats: users, room_id: room.id})
   end
 
   def self.generate_cards

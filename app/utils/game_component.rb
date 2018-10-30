@@ -149,7 +149,7 @@ module GameComponent
     end
 
     def get_room(room_id)
-      @rooms[room_id.to_i]
+      @rooms[room_id]
     end
   end
 
@@ -157,18 +157,26 @@ module GameComponent
     attr_reader :id
     attr_accessor :players, :last_player, :last_combination
     def initialize()
-      @id = rand(9999999)
-      @players = []
+      @id = rand(9999999).to_s
+      @players = {}
       @last_player = nil
       @last_combination = nil
     end
 
     def reset_id
-      @id = rand(9999999)
+      @id = rand(9999999).to_s
     end
 
     def add_player(i)
-      @players[i] = true
+      @players[i.to_s] = true
+    end
+
+    def get_players
+      @players.keys
+    end
+
+    def get_order(id)
+      @players.keys.index(id)
     end
 
     def num_of_players
