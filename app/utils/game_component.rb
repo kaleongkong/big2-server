@@ -187,4 +187,29 @@ module GameComponent
       return @last_player.nil? && @last_combination.nil?
     end
   end
+
+  class User
+    attr_reader :id, :hand, :game_state
+    def initialize(id)
+      @id = id
+      @hand = []
+      @game_state = 0
+    end
+
+    def set_hand(hand)
+      @hand = hand
+    end
+
+    def set_game_state(game_state)
+      @game_state = game_state
+    end
+
+    def min_card
+      hand.empty? ? GameComponent::Card.new(13, 3) : hand.min
+    end
+
+    def stat_json
+      {game_state: @game_state, deck: @hand.sort.map{|card| card.to_json}}
+    end
+  end
 end

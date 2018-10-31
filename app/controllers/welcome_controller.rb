@@ -8,9 +8,6 @@ class WelcomeController < ApplicationController
     room.add_player(params[:user]) if params[:user]
 
     players_stats = {}
-    # GameComponent::NUM_OF_PLAYERS.times do |i|
-    #   players_stats[i.to_s] = {game_state: -1}
-    # end
     players_stats[params[:user]] = {game_state: -1}
     puts "join_room: #{{players_stats: players_stats, room_id: room.id}}"
     render :json => {players_stats: players_stats, room_id: room.id}
