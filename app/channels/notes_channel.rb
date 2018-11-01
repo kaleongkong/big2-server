@@ -22,7 +22,7 @@ class NotesChannel < ApplicationCable::Channel
     if room.num_of_players == GameComponent::NUM_OF_PLAYERS
       min_player = GameComponent::User.new(nil)
       room.get_players.each_with_index do |id, i|
-        num_of_cards = 3
+        num_of_cards = 13
         users[id].set_hand(deck[i * num_of_cards.. (i+1) * num_of_cards - 1])
         min_player = users[id] if users[id].min_card < min_player.min_card
       end

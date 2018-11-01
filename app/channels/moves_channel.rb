@@ -1,7 +1,7 @@
 class MovesChannel < ApplicationCable::Channel
   def subscribed
     # stream_from "some_channel"
-    stream_from 'moves'
+    stream_from "moves_#{params[:roomId]}"
   end
 
   def unsubscribed
@@ -17,6 +17,6 @@ class MovesChannel < ApplicationCable::Channel
       data['players_stats']['users'][id] = {id: id, game_state: room.get_order(data['last_player']) == (i-1)%GameComponent::NUM_OF_PLAYERS ? 1 : 2}
     end
     data['combination'] = room.last_combination.cards.map{|c| c.to_json} if !room.is_new? && data['combination'].empty?
-    ActionCable.server.broadcast('moves', data)
+    ActionCable.server.broadcast("moves_#{room.id}", data)
   end
 end

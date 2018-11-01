@@ -21,6 +21,10 @@ class WelcomeController < ApplicationController
     combination = GameComponent::Combination.new(cards)
 
     room = $lobby.get_room(params[:room_id])
+    puts combination.validate
+    puts room.is_new?
+    puts room.last_player == params[:user]
+
     if (combination.validate && (room.is_new? || room.last_player == params[:user] || 
         (room.last_combination.length == combination.length && 
           room.last_combination < combination)))

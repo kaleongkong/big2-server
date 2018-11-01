@@ -1,5 +1,5 @@
 module GameComponent
-  NUM_OF_PLAYERS = 2
+  NUM_OF_PLAYERS = 3
   class Card
     include Comparable
     attr_accessor :value, :pattern
