@@ -1,11 +1,19 @@
 Rails.application.routes.draw do
-  get 'welcome/join_room'
+  post 'welcome/join_room'
 
   get 'welcome/reset'
 
   post 'welcome/move'
 
   post 'welcome/pass'
+
+  post 'welcome/create_room'
+
+  get 'welcome/get_rooms'
+
+  post 'welcome/delete_room'
+
+  post 'welcome/leave_room'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

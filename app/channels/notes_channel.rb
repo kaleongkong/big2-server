@@ -1,7 +1,7 @@
 class NotesChannel < ApplicationCable::Channel 
   def subscribed
     # stream_from "some_channel"
-    stream_from 'notes'
+    stream_from "notes_#{params[:roomId]}"
   end
 
   def unsubscribed
@@ -19,7 +19,7 @@ class NotesChannel < ApplicationCable::Channel
     room.get_players.each do |id|
       users[id] = GameComponent::User.new(id)
     end
-    if room.num_of_players == GameComponent::NUM_OF_PLAYERS
+    # if room.num_of_players == GameComponent::NUM_OF_PLAYERS
       min_player = GameComponent::User.new(nil)
       room.get_players.each_with_index do |id, i|
         num_of_cards = 13
@@ -29,14 +29,14 @@ class NotesChannel < ApplicationCable::Channel
       room.get_players.each do |id|
         users[id].set_game_state(id === min_player.id ? 1 : 2)
       end
-    else
-      room.get_players.each do |id|
-        users[id].set_game_state(-1)
-      end
-    end
+    # else
+    #   room.get_players.each do |id|
+    #     users[id].set_game_state(-1)
+    #   end
+    # end
     users = Hash[users.map{|k, v| [k, v.stat_json]}]
     puts "receive: #{{players_stats: users, room_id: room.id}}"
-    ActionCable.server.broadcast('notes', {players_stats: users, room_id: room.id})
+    ActionCable.server.broadcast("notes_#{room.id}", {players_stats: users, room_id: room.id})
   end
 
   def self.generate_cards

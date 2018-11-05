@@ -155,20 +155,26 @@ module GameComponent
 
   class Room
     attr_reader :id
-    attr_accessor :players, :last_player, :last_combination
+    attr_accessor :players, :last_player, :last_combination, :owner
     def initialize()
       @id = rand(9999999).to_s
       @players = {}
       @last_player = nil
       @last_combination = nil
+      @owner = nil
     end
 
     def reset_id
       @id = rand(9999999).to_s
     end
 
-    def add_player(i)
-      @players[i.to_s] = true
+    def add_player(id)
+      @owner = id.to_s if @players.empty?
+      @players[id.to_s] = true
+    end
+
+    def remove_player(id)
+      @players.delete(id)
     end
 
     def get_players
@@ -185,6 +191,10 @@ module GameComponent
 
     def is_new?
       return @last_player.nil? && @last_combination.nil?
+    end
+
+    def to_json
+      return { user_ids: @players.keys, limit: 4, id: @id, owner: @owner}
     end
   end
 
