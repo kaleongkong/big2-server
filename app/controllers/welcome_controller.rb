@@ -4,8 +4,9 @@ class WelcomeController < ApplicationController
     user_id = "User#{rand(999999)}"
     $lobby ||= GameComponent::Lobby.new
     room = GameComponent::Room.new
+    user = GameComponent::User.new(user_id)
     $lobby.add_room(room)
-    room.add_player(user_id) # will need to check if id is already used.
+    room.add_player(user) # will need to check if id is already used.
     render :json => {
       user_id: user_id,
       rooms: $lobby.rooms.values.map{|room| room.to_json},
@@ -35,9 +36,10 @@ class WelcomeController < ApplicationController
 
   def join_room
     room_id = params[:room_id]
-    user_id = (params[:user_id] && !params[:user_id].empty?) || "User#{rand(999999)}"
     room = $lobby.get_room(room_id)
-    room.add_player(user_id)
+    user_id = (params[:user_id] && !params[:user_id].empty?) || "User#{rand(999999)}"
+    user = room.get_player(user_id) || GameComponent::User.new(user_id)
+    room.add_player(user)
     render :json => {
       rooms: ($lobby.rooms ? $lobby.rooms.values.map{|room| room.to_json} : []), 
       user_id: user_id,
@@ -57,19 +59,6 @@ class WelcomeController < ApplicationController
     }
   end
 
-  def join_room_old
-    $lobby ||= GameComponent::Lobby.new
-    puts "lobby: #{$lobby.rooms}"
-    room = params[:room_id] ? $lobby.get_room(params[:room_id]) : GameComponent::Room.new
-    $lobby.add_room(room) if !$lobby.contains?(room.id)
-    room.add_player(params[:user]) if params[:user]
-
-    players_stats = {}
-    players_stats[params[:user]] = {game_state: -1}
-    puts "join_room: #{{players_stats: players_stats, room_id: room.id}}"
-    render :json => {players_stats: players_stats, room_id: room.id}
-  end
-
   def move
     cards = []
     params[:combination].each do |card|
@@ -78,16 +67,19 @@ class WelcomeController < ApplicationController
     combination = GameComponent::Combination.new(cards)
 
     room = $lobby.get_room(params[:room_id])
-    puts combination.validate
-    puts room.is_new?
-    puts room.last_player == params[:user]
 
     if (combination.validate && (room.is_new? || room.last_player == params[:user] || 
         (room.last_combination.length == combination.length && 
           room.last_combination < combination)))
       room.last_combination = combination
       room.last_player = params[:user]
-      render :json => params
+      # user = room.get_player(params[:user])
+      # puts "before: player hand: #{user.hand.inspect}"
+      # cards.each do |card|
+      #   user.remove_card(card)
+      # end
+      # puts "after:player hand: #{user.hand.inspect}"
+      render :json => {}
     else
       render :json => {error: 'Invalid combination'}
     end

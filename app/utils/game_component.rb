@@ -168,9 +168,13 @@ module GameComponent
       @id = rand(9999999).to_s
     end
 
-    def add_player(id)
-      @owner = id.to_s if @players.empty?
-      @players[id.to_s] = true
+    def add_player(user)
+      @owner = user.id if @players.empty?
+      @players[user.id] ||= user
+    end
+
+    def get_player(user_id)
+      return @players[user_id]
     end
 
     def remove_player(id)
@@ -208,6 +212,10 @@ module GameComponent
 
     def set_hand(hand)
       @hand = hand
+    end
+
+    def remove_card(card)
+      @hand.reject! {|c| card == c}
     end
 
     def set_game_state(game_state)
