@@ -182,7 +182,7 @@ module GameComponent
     end
 
     def get_players
-      @players.keys
+      @players.values
     end
 
     def get_order(id)
@@ -204,7 +204,7 @@ module GameComponent
 
   class User
     attr_reader :id, :hand, :game_state
-    def initialize(id)
+    def initialize(id=nil)
       @id = id
       @hand = []
       @game_state = 0

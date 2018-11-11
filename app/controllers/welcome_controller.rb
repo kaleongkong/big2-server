@@ -14,13 +14,6 @@ class WelcomeController < ApplicationController
     }
   end
 
-  def start_game
-    # room = $lobby.get_room(params[:room_id])
-    # players_stats = {}
-    # players_stats[params[:user]] = {game_state: -1}
-    # render :json => {players_stats: players_stats, room_id: room.id}
-  end
-
   def get_rooms
     $lobby ||= GameComponent::Lobby.new
     render :json => {
