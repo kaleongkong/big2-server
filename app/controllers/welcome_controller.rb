@@ -70,7 +70,7 @@ class WelcomeController < ApplicationController
       cards.each do |card|
         user.remove_card(card)
       end
-      render :json => {}
+      render :json => {end_game: user.win?}
     else
       render :json => {error: 'Invalid combination'}
     end
