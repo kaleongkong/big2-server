@@ -60,7 +60,6 @@ class WelcomeController < ApplicationController
     combination = GameComponent::Combination.new(cards)
 
     room = $lobby.get_room(params[:room_id])
-
     if (combination.validate && (room.is_new? || room.last_player == params[:user] || 
         (room.last_combination.length == combination.length && 
           room.last_combination < combination)))
@@ -70,7 +69,7 @@ class WelcomeController < ApplicationController
       cards.each do |card|
         user.remove_card(card)
       end
-      render :json => {end_game: user.win?}
+      render :json => {end_game: user.win?, hand: user.hand.map{|c| c.to_json}}
     else
       render :json => {error: 'Invalid combination'}
     end
