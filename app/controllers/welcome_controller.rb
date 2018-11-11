@@ -89,4 +89,12 @@ class WelcomeController < ApplicationController
     $lobby.remove_room(room)
     render :json => {user_count: 0}
   end
+
+  def rejoin
+    room = $lobby.get_room(params[:room_id])
+    last_combination = room.last_combination ? room.last_combination.cards : []
+    render :json => {
+      last_combination: last_combination.sort.map{|card| card.to_json}, 
+      hand: room.get_player(params[:user_id]).stat_json[:deck]}
+  end
 end
