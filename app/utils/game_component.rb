@@ -21,7 +21,9 @@ module GameComponent
     end
 
     def <=> (card)
-      if @value < card.value
+      if @value == card.value && @pattern == card.pattern
+        return 0
+      elsif @value < card.value
         return -1
       elsif @value > card.value
         return 1

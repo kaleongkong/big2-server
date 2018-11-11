@@ -29,7 +29,6 @@ class NotesChannel < ApplicationCable::Channel
       player.set_game_state(player.id === min_player.id ? 1 : 2)
     end
     users = Hash[users.map{|k, v| [k, v.stat_json]}]
-    puts "receive: #{{players_stats: users, room_id: room.id}}"
     ActionCable.server.broadcast("notes_#{room.id}", {players_stats: users, room_id: room.id})
   end
 

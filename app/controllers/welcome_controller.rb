@@ -66,12 +66,10 @@ class WelcomeController < ApplicationController
           room.last_combination < combination)))
       room.last_combination = combination
       room.last_player = params[:user]
-      # user = room.get_player(params[:user])
-      # puts "before: player hand: #{user.hand.inspect}"
-      # cards.each do |card|
-      #   user.remove_card(card)
-      # end
-      # puts "after:player hand: #{user.hand.inspect}"
+      user = room.get_player(params[:user])
+      cards.each do |card|
+        user.remove_card(card)
+      end
       render :json => {}
     else
       render :json => {error: 'Invalid combination'}
