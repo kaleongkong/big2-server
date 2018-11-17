@@ -13,7 +13,7 @@ module GameComponent
     end
 
     def valueId2Name(id)
-      return (((3..10).to_a.map{|i| i.to_s}) + ['Jack', 'Queen', 'King', 'Ace', '2'])[id]
+      return (((3..10).to_a.map{|i| i.to_s}) + ['J', 'Q', 'K', 'A', '2'])[id]
     end
 
     def to_json
