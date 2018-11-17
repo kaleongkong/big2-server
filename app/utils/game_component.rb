@@ -13,7 +13,7 @@ module GameComponent
     end
 
     def valueId2Name(id)
-      return (((3..10).to_a.map{|i| i.to_s}) + ['Jack', 'Queen', 'King', 'Ace', '2'])[id]
+      return (((3..10).to_a.map{|i| i.to_s}) + ['J', 'Q', 'K', 'A', '2'])[id]
     end
 
     def to_json
@@ -97,13 +97,10 @@ module GameComponent
         if self.dominate_value > combination.dominate_value
           return 1
         else
-          return 0
+          return -1
         end
       elsif (is_straight && combination.is_straight) || (is_royal_flash && combination.is_royal_flash)
-        (0..4).to_a.reverse.each do |i|
-          r = cards[i].value <=> combination.cards[i].value
-          return r if r!= 0
-        end
+        return cards[-1] <=> combination.cards[-1]
       elsif (is_flash && combination.is_flash)
         return @cards[-1].pattern <=> combination.cards[-1].pattern
       else
