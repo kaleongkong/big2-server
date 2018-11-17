@@ -21,7 +21,9 @@ module GameComponent
     end
 
     def <=> (card)
-      if @value < card.value
+      if @value == card.value && @pattern == card.pattern
+        return 0
+      elsif @value < card.value
         return -1
       elsif @value > card.value
         return 1
@@ -92,7 +94,7 @@ module GameComponent
       elsif @weight != combination.weight
         return @weight <=> combination.weight
       elsif (is_full_house && combination.is_full_house) || (is_four_card && combination.is_four_card)
-        if dominate_value > combination.dominate_value
+        if self.dominate_value > combination.dominate_value
           return 1
         else
           return 0
@@ -155,24 +157,34 @@ module GameComponent
 
   class Room
     attr_reader :id
-    attr_accessor :players, :last_player, :last_combination
+    attr_accessor :players, :last_player, :last_combination, :owner
     def initialize()
       @id = rand(9999999).to_s
       @players = {}
       @last_player = nil
       @last_combination = nil
+      @owner = nil
     end
 
     def reset_id
       @id = rand(9999999).to_s
     end
 
-    def add_player(i)
-      @players[i.to_s] = true
+    def add_player(user)
+      @owner = user.id if @players.empty?
+      @players[user.id] ||= user
+    end
+
+    def get_player(user_id)
+      return @players[user_id]
+    end
+
+    def remove_player(id)
+      @players.delete(id)
     end
 
     def get_players
-      @players.keys
+      @players.values
     end
 
     def get_order(id)
@@ -186,11 +198,15 @@ module GameComponent
     def is_new?
       return @last_player.nil? && @last_combination.nil?
     end
+
+    def to_json
+      return { user_ids: @players.keys, limit: 4, id: @id, owner: @owner}
+    end
   end
 
   class User
     attr_reader :id, :hand, :game_state
-    def initialize(id)
+    def initialize(id=nil)
       @id = id
       @hand = []
       @game_state = 0
@@ -200,12 +216,20 @@ module GameComponent
       @hand = hand
     end
 
+    def remove_card(card)
+      @hand.reject! {|c| card == c}
+    end
+
     def set_game_state(game_state)
       @game_state = game_state
     end
 
     def min_card
       hand.empty? ? GameComponent::Card.new(13, 3) : hand.min
+    end
+
+    def win?
+      hand.empty?
     end
 
     def stat_json

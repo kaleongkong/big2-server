@@ -1,7 +1,7 @@
 class NotesChannel < ApplicationCable::Channel 
   def subscribed
     # stream_from "some_channel"
-    stream_from 'notes'
+    stream_from "notes_#{params[:roomId]}"
   end
 
   def unsubscribed
@@ -16,27 +16,20 @@ class NotesChannel < ApplicationCable::Channel
 
     deck = NotesChannel.generate_cards
     users = {}
-    room.get_players.each do |id|
-      users[id] = GameComponent::User.new(id)
+    room.get_players.each do |player|
+      users[player.id] = player
     end
-    if room.num_of_players == GameComponent::NUM_OF_PLAYERS
-      min_player = GameComponent::User.new(nil)
-      room.get_players.each_with_index do |id, i|
-        num_of_cards = 13
-        users[id].set_hand(deck[i * num_of_cards.. (i+1) * num_of_cards - 1])
-        min_player = users[id] if users[id].min_card < min_player.min_card
-      end
-      room.get_players.each do |id|
-        users[id].set_game_state(id === min_player.id ? 1 : 2)
-      end
-    else
-      room.get_players.each do |id|
-        users[id].set_game_state(-1)
-      end
+    min_player = GameComponent::User.new
+    room.get_players.each_with_index do |player, i|
+      num_of_cards = 13
+      player.set_hand(deck[i * num_of_cards.. (i+1) * num_of_cards - 1])
+      min_player = player if player.min_card < min_player.min_card
+    end
+    room.get_players.each do |player|
+      player.set_game_state(player.id === min_player.id ? 1 : 2)
     end
     users = Hash[users.map{|k, v| [k, v.stat_json]}]
-    puts "receive: #{{players_stats: users, room_id: room.id}}"
-    ActionCable.server.broadcast('notes', {players_stats: users, room_id: room.id})
+    ActionCable.server.broadcast("notes_#{room.id}", {players_stats: users, room_id: room.id})
   end
 
   def self.generate_cards
