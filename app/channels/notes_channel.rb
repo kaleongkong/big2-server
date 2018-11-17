@@ -10,8 +10,8 @@ class NotesChannel < ApplicationCable::Channel
 
   def receive(data)
     $lobby ||= GameComponent::Lobby.new
-    puts [$lobby.rooms]
     room = data["room_id"] ? $lobby.get_room(data["room_id"]) : GameComponent::Room.new
+    room.game_start
     $lobby.add_room(room) if !$lobby.contains?(room.id)
 
     deck = NotesChannel.generate_cards
@@ -29,7 +29,7 @@ class NotesChannel < ApplicationCable::Channel
       player.set_game_state(player.id === min_player.id ? 1 : 2)
     end
     users = Hash[users.map{|k, v| [k, v.stat_json]}]
-    ActionCable.server.broadcast("notes_#{room.id}", {players_stats: users, room_id: room.id})
+    ActionCable.server.broadcast("notes_#{room.id}", {players_stats: users, room_id: room.id, room_status: room.status})
   end
 
   def self.generate_cards

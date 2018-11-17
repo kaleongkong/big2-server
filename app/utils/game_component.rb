@@ -153,10 +153,14 @@ module GameComponent
   end
 
   class Room
-    attr_reader :id
+    attr_reader :id, :status
     attr_accessor :players, :last_player, :last_combination, :owner
+    AVAILABLE = 0
+    FULL = 1
+    STARTED = 2
     def initialize()
       @id = rand(9999999).to_s
+      @status = 0 # 0 -> available, 1 -> full, 2 -> started
       @players = {}
       @last_player = nil
       @last_combination = nil
@@ -196,8 +200,12 @@ module GameComponent
       return @last_player.nil? && @last_combination.nil?
     end
 
+    def game_start
+      @status = STARTED
+    end
+
     def to_json
-      return { user_ids: @players.keys, limit: 4, id: @id, owner: @owner}
+      return { user_ids: @players.keys, limit: 4, id: @id, owner: @owner, status: @status}
     end
   end
 
