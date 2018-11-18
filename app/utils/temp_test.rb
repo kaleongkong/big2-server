@@ -43,5 +43,24 @@ module TempTest
       puts "4,5,6,7,8 is straight: #{s2.is_straight}"
       puts "3,4,5,6,7 < 4,5,6,7,8: #{s1 < s2}"
     end
+
+    def self.test4
+      c1 = GameComponent::Card.new(3, 0)
+      c2 = GameComponent::Card.new(4, 1)
+      c3 = GameComponent::Card.new(5, 0)
+      c4 = GameComponent::Card.new(6, 2)
+      c5 = GameComponent::Card.new(7, 2)
+      s1 = GameComponent::Combination.new([c1, c2, c3, c4, c5])
+      c1 = GameComponent::Card.new(4, 2)
+      c2 = GameComponent::Card.new(5, 2)
+      c3 = GameComponent::Card.new(7, 2)
+      c4 = GameComponent::Card.new(8, 2)
+      c5 = GameComponent::Card.new(9, 2)
+      s2 = GameComponent::Combination.new([c1, c2, c3, c4, c5])
+      puts "3,4,5,6,7 is straight: #{s1.is_straight}"
+      puts "4,5,6,7,8 is flash: #{s2.is_flash}"
+      puts "4,5,7,8,9 is straight: #{s2.is_straight}"
+      puts "3,4,5,6,7 < 4,5,7,8,9 : #{s1 < s2}"
+    end
   end
 end

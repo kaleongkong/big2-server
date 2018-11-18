@@ -68,18 +68,20 @@ module GameComponent
     end
 
     def is_straight
-      @weight = 2
-      return check_consecutive(cards.map{|c| c.value})
+      r = check_consecutive(cards.map{|c| c.value})
+      @weight = 2 if r
+      return r
     end
 
     def is_flash
-      @weight = 3
-      return cards.map{|c| c.pattern}.uniq.length == 1
+      r = cards.map{|c| c.pattern}.uniq.length == 1
+      @weight = 3 if r
+      return r
     end
 
     def is_royal_flash
       r = is_flash && is_straight
-      @weight = 6
+      @weight = 6 if r
       return r
     end
 
@@ -117,7 +119,7 @@ module GameComponent
     end
 
     def check_consecutive(values)
-      values.sort!
+      values = values.sort
       values.each_with_index do |v, i|
         break if values[i+1].nil?
         return false if v+1 != values[i+1]
