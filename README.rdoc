@@ -31,6 +31,7 @@ Step:
 
 1. Start sql with: mysql.server start
 2. Run my sql (optional): mysql -u root -p, pw: (none)
+2.5: Note for mysql2 issue: https://github.com/brianmario/mysql2/issues/1005
 3. set mysql2 gem to mysql2 0.4.10
 4. run server with 'bundle exec rails s -b 0.0.0.0 -p 5000'
 
